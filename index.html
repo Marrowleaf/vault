@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VAULT — Finance Command Center</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏦</text></svg>">
+</head>
+<body>
+    <header>
+        <h1>🏦 VAULT</h1>
+        <p class="tagline">Your Financial Command Center — Local-first. Private. Free.</p>
+    </header>
+
+    <nav id="tabs">
+        <button class="tab-btn active" data-tab="dashboard">📊 Dashboard</button>
+        <button class="tab-btn" data-tab="subscriptions">💳 Subscriptions</button>
+        <button class="tab-btn" data-tab="transactions">💰 Transactions</button>
+        <button class="tab-btn" data-tab="budgets">📊 Budgets</button>
+        <button class="tab-btn" data-tab="networth">🏦 Net Worth</button>
+    </nav>
+
+    <main>
+        <!-- Dashboard Tab -->
+        <section id="tab-dashboard" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-label">Monthly Subs</span>
+                    <span class="stat-value" id="dash-monthly-subs">£0.00</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Yearly Subs</span>
+                    <span class="stat-value" id="dash-yearly-subs">£0.00</span>
+                </div>
+                <div class="stat-card income">
+                    <span class="stat-label">Income (This Month)</span>
+                    <span class="stat-value" id="dash-income">£0.00</span>
+                </div>
+                <div class="stat-card expense">
+                    <span class="stat-label">Expenses (This Month)</span>
+                    <span class="stat-value" id="dash-expenses">£0.00</span>
+                </div>
+                <div class="stat-card net">
+                    <span class="stat-label">Net This Month</span>
+                    <span class="stat-value" id="dash-net">£0.00</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📅 Upcoming Bills</h2>
+                <div id="dash-upcoming" class="bill-list"></div>
+            </div>
+
+            <div class="card">
+                <h2>🚨 Overdue Bills</h2>
+                <div id="dash-overdue" class="bill-list"></div>
+            </div>
+
+            <div class="card">
+                <h2>📊 Budget Status</h2>
+                <div id="dash-budgets" class="budget-bars"></div>
+            </div>
+
+            <div class="card">
+                <h2>📈 Spending Trend</h2>
+                <canvas id="dash-chart"></canvas>
+            </div>
+        </section>
+
+        <!-- Subscriptions Tab -->
+        <section id="tab-subscriptions" class="tab-content">
+            <div class="card">
+                <h2>Add Subscription</h2>
+                <form id="sub-form" class="entry-form">
+                    <div class="form-row">
+                        <input type="text" id="sub-name" placeholder="Name" required>
+                        <input type="number" id="sub-amount" step="0.01" placeholder="Amount (£)" required>
+                        <select id="sub-cycle">
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly" selected>Monthly</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <input type="date" id="sub-next-due" required>
+                        <input type="text" id="sub-category" placeholder="Category" required>
+                        <input type="url" id="sub-url" placeholder="URL (optional)">
+                    </div>
+                    <div class="form-row">
+                        <textarea id="sub-notes" placeholder="Notes (optional)"></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">Add Subscription</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>Your Subscriptions</h2>
+                <div class="filter-row">
+                    <label><input type="checkbox" id="sub-show-inactive"> Show inactive</label>
+                    <select id="sub-filter-cat">
+                        <option value="">All Categories</option>
+                    </select>
+                </div>
+                <div id="sub-list" class="item-list"></div>
+                <div class="totals-row">
+                    <span>Monthly Total: <strong id="sub-monthly-total">£0.00</strong></span>
+                    <span>Yearly Total: <strong id="sub-yearly-total">£0.00</strong></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Transactions Tab -->
+        <section id="tab-transactions" class="tab-content">
+            <div class="card">
+                <h2>Add Transaction</h2>
+                <form id="txn-form" class="entry-form">
+                    <div class="form-row">
+                        <input type="date" id="txn-date" required>
+                        <input type="number" id="txn-amount" step="0.01" placeholder="Amount (£)" required>
+                        <select id="txn-type">
+                            <option value="expense">Expense</option>
+                            <option value="income">Income</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <input type="text" id="txn-description" placeholder="Description" required>
+                        <input type="text" id="txn-category" placeholder="Category" required>
+                        <input type="text" id="txn-account" placeholder="Account (optional)">
+                    </div>
+                    <button type="submit" class="btn-primary">Add Transaction</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>Transactions</h2>
+                <div class="filter-row">
+                    <input type="text" id="txn-search" placeholder="Search...">
+                    <select id="txn-filter-type">
+                        <option value="">All Types</option>
+                        <option value="income">Income</option>
+                        <option value="expense">Expense</option>
+                    </select>
+                    <select id="txn-filter-cat">
+                        <option value="">All Categories</option>
+                    </select>
+                </div>
+                <div id="txn-list" class="item-list"></div>
+                <div class="totals-row">
+                    <span>Total: <strong id="txn-total">£0.00</strong></span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📥 Import CSV</h2>
+                <p class="hint">CSV format: date,amount,description,category,type(income/expense),account</p>
+                <input type="file" id="txn-csv" accept=".csv" class="btn-secondary">
+                <button id="txn-import-btn" class="btn-secondary">Import</button>
+            </div>
+        </section>
+
+        <!-- Budgets Tab -->
+        <section id="tab-budgets" class="tab-content">
+            <div class="card">
+                <h2>Set Budget</h2>
+                <form id="budget-form" class="entry-form">
+                    <div class="form-row">
+                        <input type="text" id="budget-category" placeholder="Category" required>
+                        <input type="number" id="budget-limit" step="0.01" placeholder="Monthly Limit (£)" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Set Budget</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>Budget Overview</h2>
+                <div id="budget-list" class="budget-bars"></div>
+            </div>
+
+            <div class="card">
+                <h2>Budget Chart</h2>
+                <canvas id="budget-chart"></canvas>
+            </div>
+        </section>
+
+        <!-- Net Worth Tab -->
+        <section id="tab-networth" class="tab-content">
+            <div class="card">
+                <h2>Add Net Worth Entry</h2>
+                <form id="nw-form" class="entry-form">
+                    <div class="form-row">
+                        <input type="date" id="nw-date" required>
+                        <input type="number" id="nw-assets" step="0.01" placeholder="Total Assets (£)" required>
+                        <input type="number" id="nw-liabilities" step="0.01" placeholder="Total Liabilities (£)" required>
+                    </div>
+                    <div class="form-row">
+                        <textarea id="nw-notes" placeholder="Notes (optional)"></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">Add Entry</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>Net Worth History</h2>
+                <div id="nw-list" class="item-list"></div>
+            </div>
+
+            <div class="card">
+                <h2>Net Worth Chart</h2>
+                <canvas id="nw-chart"></canvas>
+            </div>
+
+            <div class="card">
+                <h2>Accounts</h2>
+                <form id="acct-form" class="entry-form">
+                    <div class="form-row">
+                        <input type="text" id="acct-name" placeholder="Account Name" required>
+                        <select id="acct-type">
+                            <option value="checking">Current Account</option>
+                            <option value="savings">Savings</option>
+                            <option value="credit">Credit Card</option>
+                            <option value="investment">Investment</option>
+                        </select>
+                        <input type="number" id="acct-balance" step="0.01" placeholder="Balance (£)" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Add Account</button>
+                </form>
+                <div id="acct-list" class="item-list"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>VAULT — All data stored locally in your browser. No cloud. No tracking.</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
